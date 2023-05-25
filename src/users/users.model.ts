@@ -5,6 +5,12 @@ import { Tasks } from 'src/tasks/tasks.model';
 @Table
 export class Users extends Model {
   @Column({
+    autoIncrement: true,
+    unique: true,
+  })
+  id: number;
+
+  @Column({
     type: DataType.UUID,
     primaryKey: true,
     defaultValue: DataType.UUIDV1,
