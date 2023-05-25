@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { sequelizeConfig } from './config/sequelize.config';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import configurations from './config/configurations';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TasksModule } from './tasks/tasks.module';
@@ -10,8 +10,24 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    SequelizeModule.forRoot(sequelizeConfig),
+    ConfigModule.forRoot({
+      load: [configurations],
+    }),
+    SequelizeModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        dialect: configService.get('DATABASE.dialect'),
+        host: configService.get('DATABASE.host'),
+        port: configService.get('DATABASE.port'),
+        username: configService.get('DATABASE.username'),
+        password: configService.get('DATABASE.password'),
+        database: configService.get('DATABASE.database'),
+        models: [__dirname + './**/*.model.ts'],
+        autoLoadModels: true,
+        synchronize: true, //not recommended in production
+      }),
+      inject: [ConfigService],
+    }),
     UsersModule,
     TasksModule,
     AuthModule,
