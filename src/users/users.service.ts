@@ -9,13 +9,13 @@ export class UsersService {
     @InjectModel(Users)
     private UsersModel: typeof Users,
   ) {}
-  async create(createUserDto: CreateUserDto): Promise<string> {
+  async create(createUserDto: CreateUserDto): Promise<any> {
     const { email } = createUserDto;
     const user = await this.UsersModel.findOne({ where: { email: email } });
 
-    if (user) return 'User already exist';
+    if (user) return { message: 'User already exist' };
     await this.UsersModel.create({ ...createUserDto });
-    return 'Account created successfully';
+    return { message: 'Account created successfully' };
   }
   async findAll(): Promise<Users[]> {
     const users = await this.UsersModel.findAll();
@@ -27,8 +27,8 @@ export class UsersService {
     return user;
   }
 
-  async delete(userId: string): Promise<string> {
+  async delete(userId: string): Promise<any> {
     await this.UsersModel.destroy({ where: { userId: userId } });
-    return 'Account deleted successfully';
+    return { message: 'Account deleted successfully' };
   }
 }

@@ -8,10 +8,10 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 export class TasksService {
   constructor(@InjectModel(Tasks) private TasksModel: typeof Tasks) {}
 
-  async create(createTaskDto: CreateTaskDto, req: Request): Promise<string> {
-    createTaskDto.userId = req['user'].userId;
+  async create(createTaskDto: CreateTaskDto, request: any): Promise<any> {
+    createTaskDto.userId = request.user.userId;
     await this.TasksModel.create({ ...createTaskDto });
-    return 'Task created successfully';
+    return { message: 'Task created successfully' };
   }
 
   async findAll(): Promise<Tasks[]> {
@@ -27,21 +27,21 @@ export class TasksService {
   async update(
     taskId: ParseUUIDPipe,
     updateTaskDto: UpdateTaskDto,
-    req: Request,
-  ): Promise<string> {
-    const userId: ParseUUIDPipe = req['user'].userId;
+    request: any,
+  ): Promise<any> {
+    const userId: ParseUUIDPipe = request.user.userId;
 
     await this.TasksModel.update(updateTaskDto, {
       where: { taskId: taskId, userId: userId },
     });
-    return 'Task updated successfully';
+    return { message: 'Task updated successfully' };
   }
 
-  async delete(taskId: ParseUUIDPipe, req: Request): Promise<string> {
-    const userId: ParseUUIDPipe = req['user'].userId;
+  async delete(taskId: ParseUUIDPipe, request: any): Promise<any> {
+    const userId: ParseUUIDPipe = request.user.userId;
     await this.TasksModel.destroy({
       where: { taskId: taskId, userId: userId },
     });
-    return 'Task deleted successfully';
+    return { message: 'Task deleted successfully' };
   }
 }
